@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
-# Copy .env file if it's used by Django settings
+# Copy .env file if it' used by Django settings
 COPY .env .env
 
 # Run Django using Gunicorn
