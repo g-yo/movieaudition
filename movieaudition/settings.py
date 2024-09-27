@@ -69,11 +69,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'movieaudition.wsgi.application'
+print("DATABASE_URL:", os.environ.get('DATABASE_URL'))
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'movieaudition',
+        'USER': 'postgres',
+        'PASSWORD': '65376537',
+        'HOST': 'movieaudition.chkka4ea4ew0.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
+    }
 }
 # Password validatorssss
 AUTH_PASSWORD_VALIDATORS = [
