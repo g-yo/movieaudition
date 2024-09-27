@@ -54,6 +54,7 @@ jobs:
           
           # Navigate to the project directory
           cd /home/ubuntu/movieaudition || exit
+          git stash
 
           # Clean up untracked files and pull the latest changes
           git clean -f
