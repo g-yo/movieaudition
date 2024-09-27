@@ -20,9 +20,9 @@ services:
     image: postgres:14
     container_name: auditions_db
     environment:
-      POSTGRES_DB: yourdatabase
-      POSTGRES_USER: youruser
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: movieaudition
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 65376537
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
