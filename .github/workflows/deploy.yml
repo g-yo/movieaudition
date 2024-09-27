@@ -27,8 +27,8 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t geoaugustine/movieaudition:latest .
-        docker push geoaugustine/movieaudition:latest
+        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/audition:latest .
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/audition:latest
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v0.1.0
@@ -37,6 +37,6 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          sudo docker pull geoaugustine/movieaudition:latest
+          sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/audition:latest
           sudo docker-compose down
           sudo docker-compose up -d
