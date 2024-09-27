@@ -1,30 +1,35 @@
 version: '3'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: auditions_web
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-    command: gunicorn auditions.wsgi:application --bind 0.0.0.0:8000
-
   db:
-    image: postgres:14
-    container_name: auditions_db
+    image: postgres:latest
     environment:
       POSTGRES_DB: movieaudition
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 65376537
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn auditions.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://postgres:65376537@movieaudition.chkka4ea4ew0.us-east-1.rds.amazonaws.com:5432/movieaudition
+
 
 volumes:
-  postgres_data:
+  pg_data:
+
+networks:
+  default:
