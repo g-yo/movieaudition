@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Ensure the body and html take full height and have no margin */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        /* Container for the entire page content */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Full height of the viewport */
+        }
+
+        /* Main content area */
+        .content {
+            flex: 1; /* Take up available space */
+            padding: 20px;
+        }
+
+        /* Footer styling */
+        .footer {
+            background-color: #f1f1f1; /* Light gray color */
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            /* Positioning at the bottom is handled by flexbox */
+        }
+
+        .footer a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9em;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="content">
+            <!-- Your page content goes here -->
+        </div>
+
+        <div class="footer">
+            <p><a href="#">About Us</a> | <a href="#">Contact Us</a> | <a href="#">Terms and Conditions</a></p>
+            <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!-- update_profile.html -->
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Update Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+
+    <hr>
+
+    <h3>Password Management</h3>
+    <ul>
+        <!-- Link for changing password -->
+        <li><a href="{% url 'password_change' %}">Change Password</a></li>
+        
+        <!-- Link for resetting password (Forgot Password) -->
+        <li><a href="{% url 'password_reset' %}">Forgot Password?</a></li>
+    </ul>
+</div>
+{% endblock %}

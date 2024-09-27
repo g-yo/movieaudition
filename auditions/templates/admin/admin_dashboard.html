@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ACTRS</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: white;
+            border-bottom: 2px solid #ddd;
+            position: relative;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #000;
+            z-index: 2;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: #000000 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .apply-title {
+            text-align: center;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #000000;
+        }
+
+        .apply-title .auditions-red {
+            color: #ff0000;
+        }
+
+        .tab-content > .tab-pane {
+            padding: 20px;
+        }
+
+        .movie-card, .application-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+        }
+
+        .movie-card img, .application-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        .movie-details, .application-details {
+            flex-grow: 1;
+        }
+
+        .movie-card:hover, .application-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-title, .application-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .btn-red {
+            background-color: #ff0000;
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-red:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#" style="color:red;">ACTRS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_dashboard' %}">Dashboard</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'userlogin' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Tabs Navigation -->
+    <div class="container">
+        <ul class="nav nav-tabs" id="dashboardTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="movies-tab" data-toggle="tab" href="#movies" role="tab" aria-controls="movies" aria-selected="true">Movies</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="applications-tab" data-toggle="tab" href="#applications" role="tab" aria-controls="applications" aria-selected="false">Applications</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="dashboardTabContent">
+            <!-- Movies Section -->
+            <div class="tab-pane fade show active" id="movies" role="tabpanel" aria-labelledby="movies-tab">
+                <h1 class="apply-title">Movies</h1>
+                <a href="{% url 'add_movie' %}" class="btn btn-success mb-3">Add Movie</a>
+                <div class="row">
+                    {% for movie in movies %}
+                    <div class="col-md-12 mb-4">
+                        <div class="movie-card">
+                            {% if movie.image %}
+                                <img src="{{ movie.image.url }}" alt="{{ movie.name }}">
+                            {% else %}
+                                <img src="{% static 'path/to/default_image.jpg' %}" alt="{{ movie.name }}">
+                            {% endif %}
+                            <div class="movie-details">
+                                <h5 class="movie-title">{{ movie.name }}</h5>
+                                <p><strong>Age Range:</strong> {{ movie.age_start }}-{{ movie.age_end }}</p>
+                                <p><strong>Gender:</strong> {{ movie.gender }}</p>
+                                <p><strong>Number of People Needed:</strong> {{ movie.number_of_people }}</p>
+                                <p><strong>Location:</strong> {{ movie.location }}</p>
+                                <a href="{% url 'edit_movie' movie.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="{% url 'delete_movie' movie.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                No movies available.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Applications Section -->
+            <div class="tab-pane fade" id="applications" role="tabpanel" aria-labelledby="applications-tab">
+                <h1 class="apply-title">Applications</h1>
+                <p>Total Applications: {{ application_count }}</p>
+                <a href="{% url 'view_applications' %}" class="btn btn-primary mb-3">View Applications</a>
+                <div class="row">
+                    {% for application in applications %}
+                    <div class="col-md-12 mb-4">
+                        <div class="application-card">
+                            {% if application.photo %}
+                                <img src="{{ application.photo.url }}" alt="{{ application.name }}">
+                            {% else %}
+                                <img src="{% static 'path/to/default_photo.jpg' %}" alt="{{ application.name }}">
+                            {% endif %}
+                            <div class="application-details">
+                                <h5 class="application-title">{{ application.name }}</h5>
+                                <p><strong>Movie:</strong> {{ application.movie.name }}</p>
+                                <p><strong>Email:</strong> {{ application.email }}</p>
+                                <p><strong>Phone:</strong> {{ application.phone }}</p>
+                                <p><strong>Age:</strong> {{ application.age }}</p>
+                                <p><strong>Gender:</strong> {{ application.gender }}</p>
+                                <p><strong>Status:</strong> {% if application.selected %}Selected{% else %}Pending{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                No applications available.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

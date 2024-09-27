@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply for {{ movie.name }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff; /* White background */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #000000; /* Black color */
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .movie-name {
+            color: #ff0000; /* Red color */
+            text-transform: uppercase; /* Make all letters uppercase */
+            font-weight: bold; /* Bold font */
+            margin-left: 10px; /* Small space between "Apply for" and movie name */
+        }
+
+        form p {
+            margin: 15px 0;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="number"],
+        form input[type="date"],
+        form input[type="file"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensure padding doesn't affect overall width */
+        }
+
+        form textarea {
+            resize: vertical; /* Allow vertical resizing only */
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1em;
+            color: #ffffff;
+            background-color: #ff0000; /* Red color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #cc0000;
+        }
+
+        .text-section {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid #ddd;
+            position: relative;
+            width: 80%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .text-section::before {
+            content: "";
+            display: block;
+            width: 20%;
+            height: 4px;
+            background-color: #ff0000;
+            margin: 0 auto;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+        }
+
+        .stylish-text {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.4em;
+            color: #000000;
+            font-style: italic;
+        }
+
+        /* body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ movie.image.url }}');
+            background-size: cover;
+            background-position: center;
+            filter: opacity(0.5); 
+            z-index: -1;
+        } */
+    </style>
+</head>
+<body>
+
+
+    {% include 'auditions/header.html' %}
+
+    <div class="container">
+        <h1>Apply for <span class="movie-name">{{ movie.name }}</span></h1>
+        
+        <!-- Success message popup -->
+        {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

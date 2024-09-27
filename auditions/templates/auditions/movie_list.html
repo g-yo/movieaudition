@@ -1,0 +1,852 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie List - ACTRS</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- FontAwesome CDN -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: white;
+            border-bottom: 2px solid #ddd;
+            position: relative;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #000;
+            z-index: 2;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: #000000 !important; /* Black color */
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative; /* Set relative positioning for .side-images */
+        }
+
+        .apply-title {
+            text-align: center;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #000000; /* Black for "LATEST" */
+        }
+
+        .apply-title .auditions-red {
+            color: #ff0000; /* Red color for "AUDITIONS" */
+        }
+        
+        .auditions-red {
+            color: #ff0000; /* Red color for "AUDITIONS" */
+        }
+
+        .movie-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            height: 300px; /* Fixed height for uniformity */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 200px; /* Fixed height for images */
+            object-fit: cover; /* Ensure images cover the box */
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .btn-red {
+    background-color: transparent;
+    color: #000000;
+    border: 2px solid #ff0000;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 1.2;
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-red::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #ff0000;
+    transition: width 0.5s ease-in-out;
+    z-index: -1;
+}
+
+.btn-red:hover {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.btn-red:hover::before {
+    width: 100%;
+}
+
+        .text-section {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid #ddd;
+            position: relative;
+            width: 80%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .text-section::before {
+            content: "";
+            display: block;
+            width: 20%;
+            height: 4px;
+            background-color: #ff0000;
+            margin: 0 auto;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+        }
+
+        .stylish-text {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.4em;
+            color: #000000;
+            font-style: italic;
+        }
+
+        .side-images {
+            margin: 20px 0; /* Adjust margins as needed */
+            text-align: right; /* Align images to the right */
+        }
+
+        .side-images img {
+            display: block;
+            margin-bottom: 20px;
+            width: 150px; /* Adjust width as needed */
+            height: auto;
+        }
+
+        /* Chatbot Styles */
+        #chatbot {
+            width: 100%;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        #chatbotResponse {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        #chatbotResponse p {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+        }
+
+        #chatbotResponse .user-message {
+            text-align: right;
+            background-color: #d1e7dd;
+        }
+
+        #chatbotResponse .bot-message {
+            text-align: left;
+            background-color: #f8d7da;
+        }
+
+        #userInput {
+            width: calc(100% - 70px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+
+        #sendButton {
+            padding: 10px 15px;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background-color: #cc0000;
+        }
+
+
+        .parallax-container {
+  position: relative;
+  height: 300px; /* adjust the height to your liking */
+  margin-bottom: 20px; /* add some margin to separate from the content below */
+}
+
+.parallax {
+  background-image: url("{% static 'auditions/images/1.jpg' %}");
+  background-attachment: fixed;
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1; /* send the image to the back */
+}
+
+.title-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1; /* bring the title to the front */
+}
+
+.our-services-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff; /* adjust the color to your liking */
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* add a text shadow for better readability */
+}
+.full-size-image-container {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* adjust the height to your liking */
+  overflow: hidden;
+}
+
+.full-size-image-container {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* adjust the height to your liking */
+  overflow: hidden;
+}
+
+.full-size-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0; /* initial border radius */
+  transition: transform 0.5s ease-in-out, border-radius 0.5s ease-in-out;
+  z-index: 1; /* set z-index to 1 */
+}
+
+.heading-container {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  opacity: 0; /* initial opacity */
+  transition: opacity 0.5s ease-in-out;
+  z-index: 0; /* set z-index to 0 */
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 300; /* thin font */
+  color: #000; /* black color */
+  margin-bottom: 10px;
+}
+
+.heading:nth-child(2) {
+  color: #ff0000; /* red color */
+}
+
+.full-size-image-container:hover .full-size-image {
+  transform: scale(0.8); /* scale down to 80% of the screen */
+  border-radius: 5%; /* round the edges to 5% */
+}
+
+.full-size-image-container:hover .heading-container {
+  transform: translateY(-50px); /* move up from the bottom */
+}
+
+.full-size-image-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff; /* white background */
+  opacity: 0; /* initial opacity */
+  transition: opacity 0.5s ease-in-out;
+  z-index: 2; /* set z-index to 2 */
+}
+@import url('https://fonts.googleapis.com/css2?family=Codystar:wght@300&display=swap');
+
+.heading {
+    position: relative;
+    display: inline-block; /* display inline */
+    margin: 10px 20px; /* add some margin */
+    padding: 0; /* remove padding */
+    border-radius: 0; /* remove border radius */
+    background-color: transparent; /* remove background color */
+    box-shadow: none; /* remove box shadow */
+    opacity: 0; /* initial opacity */
+    transition: opacity 1s ease-in-out;
+    font-family: 'Codystar', sans-serif; /* set font to 'Codystar' */
+    font-size: 48px; /* increased font size */
+    font-weight: 300;
+}
+
+.heading.actrs, .heading.milestones {
+    color: #ff0000; /* red color */
+}
+
+.heading:not(.actrs):not(.milestones) {
+    color: #000; /* black color */
+}
+
+/* fade in on scroll */
+.heading {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+}
+
+.heading.scroll-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+.image-container {
+    background-color: #ffffff;
+    position: relative;
+    width: 100%;
+    height: 500px; /* adjust the height to your liking */
+}
+
+.image-left {
+
+    position: absolute;
+    top: 100%; /* start from the bottom */
+    left: 0;
+    width: 30%;
+    height: 100%;
+    object-fit: cover;
+    transition: top 1s ease-in-out, opacity 1s ease-in-out;
+    opacity: 0; /* initial opacity */
+}
+
+.image-left.show {
+    top: 0;
+    opacity: 1; /* final opacity */
+}
+
+.image-right {
+    background-color: #ffffff;
+    animation: fade-in-from-right 2s forwards;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0; /* initial opacity */
+}
+.image-right:hover {
+  animation: fade-out-to-right 2s forwards;
+}
+.image-right.fade-in {
+    opacity: 1; /* final opacity */
+}
+
+.footer {
+  background-color: #fff; /* white background */
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* add shadows */
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+}
+
+.footer-link {
+  color: #333; /* dark gray text */
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+.footer-link:hover {
+  color: #666; /* darker gray text on hover */
+}
+.btn-red {
+    background-color: transparent;
+    color: #000000;
+    border: 2px solid #ff0000;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: normal;
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-red::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #ff0000;
+    transition: width 0.5s ease-in-out;
+    z-index: -1;
+}
+
+.btn-red:hover {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.btn-red:hover::before {
+    width: 100%;
+}
+.footer-social {
+  display: flex;
+  align-items: center;
+}
+
+.footer-social-link {
+  color: #333; /* dark gray text */
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+.footer-social-link:hover {
+  color: #666; /* darker gray text on hover */
+}
+
+.fa {
+  font-size: 24px;
+}
+
+@keyframes fade-in-from-right {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.popup-image-container {
+  position: relative;
+  width: 100%;
+  height: 900px;
+  overflow: hidden;
+}
+
+.popup-image {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateX(-100%) rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.popup-image.show {
+  opacity: 1;
+  transform: translateX(0) rotate(0deg);
+}
+
+.popup-image.fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+.popup-image.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="background-container"></div> <!-- Background image container -->
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#" style="color:red;">ACTRS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> <!-- Profile icon -->
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_dashboard' %}">Dashboard</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'userlogin' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Carousel outside the main container -->
+    <div id="movieCarousel" class="carousel slide" data-ride="carousel" data-interval="2000">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'auditions/images/1.jpg' %}" class="d-block w-100 carousel-image" alt="First slide">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'auditions/images/2.jpg' %}" class="d-block w-100 carousel-image" alt="Second slide">
+            </div>
+            <!-- Add more carousel items as needed -->
+        </div>
+        <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#movieCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+    <div class="text-section">
+        <p class="stylish-text">"Acting is all about being able to hold a mirror up to nature and seeing yourself in it...." -Laurence Olivier</p></p>
+    </div>
+
+    <div class="container">
+        <h1 class="apply-title">LATEST <span class="auditions-red">AUDITIONS</span></h1>
+
+        <div class="row">
+            {% for movie in movies %}
+            <div class="col-md-4 mb-4">
+                <div class="movie-card">
+                    <img src="{{ movie.image.url }}" alt="{{ movie.name }}">
+                    <h5 class="movie-title">{{ movie.name }}</h5>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-red btn-block">Apply</a>                    {% else %}
+                        <a href="{% url 'userlogin' %}" class="btn btn-red btn-block">Login to Apply</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="parallax-container">
+        <div class="parallax" data-parallax="scroll" data-image-src="{% static 'auditions/images/1.jpg' %}"></div>
+        <div class="title-layer">
+          <h1 class="our-services-title">Our Services</h1>
+        </div>
+      </div>
+<div class="full-size-image-container">
+  <img src="{% static 'auditions/images/1.jpg' %}" alt="Full Size Image" class="full-size-image">
+</div>
+<div class="popup-image-container">
+    <img src="{% static 'auditions/images/8.PNG' %}" class="popup-image">
+  </div>
+
+<div class="image-container">
+    <img src="{% static 'auditions/images/6.png' %}" class="image-left" />
+    <img src="{% static 'auditions/images/7.png' %}" class="image-right fade-in" />
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br>
+
+{% include 'auditions/footer.html' %}
+
+
+<script>
+
+const buttons = document.querySelectorAll('.btn-red');
+
+buttons.forEach(button => {
+    button.addEventListener('mouseover', () => {
+        button.style.background = 'red';
+        button.style.color = 'white';
+        button.style.fontWeight = 'bold';
+    });
+
+    button.addEventListener('mouseout', () => {
+        button.style.background = 'transparent';
+        button.style.color = 'black';
+        button.style.fontWeight = 'normal';
+    });
+});
+ // Get the scroll position of the window
+let scrollPosition = 0;
+
+// Add event listener to show the popup image when scrolling reaches the container
+window.addEventListener('scroll', () => {
+  // Get the current scroll position
+  scrollPosition = window.scrollY;
+
+  // Check if the container is within the viewport
+  if (isElementInView(popupImageContainer)) {
+    // Add the 'show' class to the popup image element
+    popupImage.classList.add('show');
+    popupImage.classList.remove('fade-out');
+    popupImage.classList.add('fade-in');
+  } else {
+    // Remove the 'show' class from the popup image element
+    popupImage.classList.remove('show');
+    popupImage.classList.remove('fade-in');
+    popupImage.classList.add('fade-out');
+  }
+});
+
+// Function to check if an element is within the viewport
+function isElementInView(element) {
+  let rect = element.getBoundingClientRect();
+  return (
+    rect.top <= window.innerHeight &&
+    rect.bottom >= 0
+  );
+}
+// Get the popup image element
+const popupImage = document.querySelector('.popup-image');
+
+// Get the popup image container element
+const popupImageContainer = document.querySelector('.popup-image-container');
+
+// Add event listener to show the popup image when cursor reaches the container
+popupImageContainer.addEventListener('mouseover', () => {
+  // Add the 'show' class to the popup image element
+  popupImage.classList.add('show');
+});
+
+// Add event listener to hide the popup image when mouse moves away
+document.addEventListener('mousemove', (event) => {
+  if (!popupImageContainer.contains(event.target) && !popupImage.contains(event.target)) {
+    // Remove the 'show' class from the popup image element
+    popupImage.classList.remove('show');
+  } else {
+    // Add the 'show' class to the popup image element if the cursor is still within the container
+    popupImage.classList.add('show');
+  }
+});
+
+// Add event listener to window scroll
+window.addEventListener('scroll', () => {
+  const scrollPosition = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const popupImageHeight = popupImageContainer.offsetHeight;
+
+  if (scrollPosition + windowHeight > popupImageHeight) {
+    popupImage.classList.add('show');
+  } else {
+    popupImage.classList.remove('show');
+  }
+});
+// Add scroll event listener to the popup image container
+popupImageContainer.addEventListener('scroll', () => {
+  // Add animation to the popup image container when scrolled
+  popupImageContainer.classList.add('scroll-animation');
+});
+
+// Remove scroll animation when scroll is complete
+popupImageContainer.addEventListener('scroll', () => {
+  if (popupImageContainer.scrollTop + popupImageContainer.offsetHeight >= popupImageContainer.scrollHeight) {
+    popupImageContainer.classList.remove('scroll-animation');
+  }
+});
+
+
+// add event listener to window scroll
+window.addEventListener('scroll', function() {
+  const scrollPosition = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const popupImageHeight = popupImageContainer.offsetHeight;
+
+  if (scrollPosition + windowHeight > popupImageHeight) {
+    popupImage.classList.add('show');
+  } else {
+    popupImage.classList.remove('show');
+  }
+});
+document.querySelector('.image-container').addEventListener('mouseleave', function() {
+    // remove class to hide the left image
+    document.querySelector('.image-left').classList.remove('show');
+
+    // remove class to fade out the right image
+    document.querySelector('.image-right').classList.remove('fade-in');
+});
+
+// add event listener to mouseenter
+document.querySelector('.image-container').addEventListener('mouseenter', function() {
+    // add class to show the left image
+    document.querySelector('.image-left').classList.add('show');
+
+    // add class to fade in the right image
+    document.querySelector('.image-right').classList.add('fade-in');
+});
+    // add event listener to window scroll
+    window.addEventListener('scroll', function() {
+        // get all headings
+        var headings = document.querySelectorAll('.heading');
+
+        // loop through headings
+        headings.forEach(function(heading) {
+            // get the offset top of the heading
+            var offsetTop = heading.offsetTop;
+
+            // get the scroll position
+            var scrollPosition = window.scrollY;
+
+            // check if the heading is in view
+            if (scrollPosition + window.innerHeight > offsetTop) {
+                // add class to fade in
+                heading.classList.add('scroll-in');
+            }
+        });
+    });
+</script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-parallax-js@5.5.1/dist/simple-parallax.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-parallax-js@5.5.1/dist/simple-parallax.min.js"></script>
+<script>
+  new simpleParallax('.parallax', {
+    scale: 1.2, // adjust the scale to your liking
+    overflow: true,
+  });
+</script>
+    <script>
+        document.getElementById('sendButton').addEventListener('click', function() {
+            const userInput = document.getElementById('userInput').value;
+    
+            // Display the user message
+            const userMessage = document.createElement('p');
+            userMessage.textContent = userInput;
+            userMessage.className = 'user-message';
+            document.getElementById('chatbotResponse').appendChild(userMessage);
+    
+            fetch('/chatbot/', {
+                method: 'POST',
+                body: JSON.stringify({ message: userInput }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // Ensure this token is being set
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the bot reply
+                if (data.reply) {
+                    const botMessage = document.createElement('p');
+                    botMessage.textContent = data.reply;
+                    botMessage.className = 'bot-message';
+                    document.getElementById('chatbotResponse').appendChild(botMessage);
+                } else {
+                    const errorMessage = document.createElement('p');
+                    errorMessage.textContent = "Sorry, I didn't understand that.";
+                    errorMessage.className = 'bot-message';
+                    document.getElementById('chatbotResponse').appendChild(errorMessage);
+                }
+    
+                // Scroll to the bottom of the chat
+                document.getElementById('chatbotResponse').scrollTop = document.getElementById('chatbotResponse').scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    
+            // Clear the input field
+            document.getElementById('userInput').value = '';
+        });
+    </script>
+    
+</body>
+</html>

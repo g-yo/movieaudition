@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .application-detail {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        .application-detail img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .application-info {
+            flex-grow: 1;
+        }
+
+        .application-info h3 {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+        }
+
+        .btn-view {
+            background-color: #28a745;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .btn-view:hover {
+            background-color: #218838;
+        }
+
+        .btn-action {
+            margin: 5px;
+        }
+
+        .status-label {
+            font-weight: bold;
+        }
+        
+        .selected {
+            color: green;
+        }
+        
+        .rejected {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Application Details</h2>
+        <div class="application-detail">
+            {% if application.photo %}
+                <img src="{{ application.photo.url }}" alt="{{ application.name }}">
+            {% else %}
+                <img src="{% static 'path/to/default_photo.jpg' %}" alt="{{ application.name }}">
+            {% endif %}
+            <div class="application-info">
+                <h3>{{ application.name }}</h3>
+                <p><strong>Movie:</strong> {{ application.movie.name }}</p>
+                <p><strong>Email:</strong> {{ application.email }}</p>
+                <p><strong>Phone:</strong> {{ application.phone }}</p>
+                <p><strong>Age:</strong> {{ application.age }}</p>
+                <p><strong>Gender:</strong> {{ application.gender }}</p>
+                <p><strong>Status:</strong> 
+                    <span class="status-label {% if application.selected %}selected{% else %}rejected{% endif %}">
+                        {% if application.selected %}
+                            Selected
+                        {% else %}
+                            Pending
+                        {% endif %}
+                    </span>
+                </p>
+                <form method="post" action="{% url 'select_application' application.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-action" {% if application.selected %}disabled{% endif %}>Select</button>
+                </form>
+                <form method="post" action="{% url 'reject_application' application.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-action" {% if application.selected %}disabled{% endif %}>Reject</button>
+                </form>
+            </div>
+        </div>
+
+        <a href="{% url 'view_applications' %}" class="btn btn-secondary back-button">Back to Applications List</a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        input[type="text"], input[type="email"], input[type="date"], input[type="password"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 24px;
+        }
+
+        input[type="submit"] {
+            background-color: #ff0000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #cc0000;
+        }
+
+        #age_display {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="font-size: 36px; color: #ff0000;">Register</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="id_username">Username:</label>
+            <input type="text" id="id_username" name="username">
+            {% if form.username.errors %}
+                <div class="error">{{ form.username.errors }}</div>
+            {% endif %}
+
+            <label for="id_full_name">Full Name:</label>
+            <input type="text" id="id_full_name" name="full_name">
+            {% if form.full_name.errors %}
+                <div class="error">{{ form.full_name.errors }}</div>
+            {% endif %}
+
+            <label for="id_phone_number">Phone Number:</label>
+            <input type="text" id="id_phone_number" name="phone_number">
+            {% if form.phone_number.errors %}
+                <div class="error">{{ form.phone_number.errors }}</div>
+            {% endif %}
+
+            <label for="id_email">Email:</label>
+            <input type="email" id="id_email" name="email">
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+            {% endif %}
+
+            <label for="id_profile_image">Profile Image:</label>
+            <input type="file" id="id_profile_image" name="profile_image">
+            {% if form.profile_image.errors %}
+                <div class="error">{{ form.profile_image.errors }}</div>
+            {% endif %}
+
+            <label for="id_date_of_birth">Date Of Birth:</label>
+            <input type="date" id="id_date_of_birth" name="date_of_birth">
+            {% if form.date_of_birth.errors %}
+                <div class="error">{{ form.date_of_birth.errors }}</div>
+            {% endif %}
+
+            <label for="id_password1">Password:</label>
+            <input type="password" id="id_password1" name="password1" style="width: 100%;">
+            {% if form.password1.errors %}
+                <div class="error">{{ form.password1.errors }}</div>
+            {% endif %}
+
+            <label for="id_password2">Confirm Password:</label>
+            <input type="password" id="id_password2" name="password2" style="width: 100%;">
+            {% if form.password2.errors %}
+                <div class="error">{{ form.password2.errors }}</div>
+            {% endif %}
+
+            <p id="age_display"></p>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('id_date_of_birth').addEventListener('change', calculateAge);
+    </script>
+</body>
+</html>

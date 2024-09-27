@@ -1,0 +1,197 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ movie.name }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- FontAwesome CDN -->
+    <style>
+body {
+            font-family: Arial, sans-serif;
+            color: #333; /* Dark gray text */
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        /* body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ movie.image.url }}');
+            background-size: cover;
+            background-position: center;
+            filter: opacity(0.5); 
+            z-index: -1;
+        } */
+        .apply-title {
+        color: rgb(0, 0, 0);
+        text-align: center;
+        display: block;
+        width: 100%;
+    }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff; /* White background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            display: flex;
+        
+            align-items: flex-start; /* Align items to the start of the container */
+        }
+
+
+        .image-container {
+  flex: 1;
+  padding-right: 20px;
+  overflow: hidden; /* Add this line to clip the image when zoomed */
+}
+
+.image-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease; /* Add this line for the transition effect */
+  transform: scale(1); /* Add this line to set the initial scale */
+  border-radius: 20px; /* Add this line for rounded corners */
+}
+
+.image-container:hover img {
+  transform: scale(0.9); /* Adjust the value to your liking */
+}
+        .details-container {
+            flex: 2;
+        }
+
+        h1 {
+            color: #ff0000; /* Blue color for the title */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 8px; /* Rounded corners */
+            object-fit: cover;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1em;
+            color: #ffffff;
+            background-color: #ff0000; /* Blue color */
+            border: none;
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ef3f3f; /* Darker blue on hover */
+        }
+
+        a {
+            text-decoration: none;
+        }
+        .navbar {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background: white;
+    border-bottom: 2px solid #ddd;
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #000;
+    z-index: 2;
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: #000000 !important; /* Black color */
+}
+.custom-paragraph {
+    text-align: center;
+    margin: 20px 0; /* Add margin to create space around the centered paragraph */
+}
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#" style="color:red;">ACTRS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> <!-- Profile icon -->
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'userlogin' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="image-container">
+            {% if movie.image %}
+                <img src="{{ movie.image.url }}" alt="{{ movie.name }}">
+            {% endif %}
+        </div>
+        <div class="details-container">
+            <h1>{{ movie.name }}</h1>
+            <p>{{ movie.description }}</p>
+            <p><strong>Age of Applicant:</strong> <span style="color: red; font-weight: bold;">{{ movie.age_start }}-{{ movie.age_end }}</span></p>
+            <p><strong>Genderof Applicant:</strong> <span style="color: red; font-weight: bold;">{{ movie.gender }}</span></p>
+            <p><strong>Number of People Needed:</strong> <span style="color: red; font-weight: bold;">{{ movie.number_of_people }}</span></p>
+            <p><strong>Location of Audition:</strong> <span style="color: red; font-weight: bold;">{{ movie.location }}</span></p>
+
+            <a href="{% url 'apply_for_movie' movie.id %}">
+                <button>Apply</button>
+                
+            </a>
+            <p class="custom-paragraph">For this movie, we are looking for <span style="color: red; font-weight: bold;">{{ movie.gender }}</span> applicants aged between <span style="color: red; font-weight: bold;">{{ movie.age_start }}-{{ movie.age_end }}</span>. We need <span style="color: red; font-weight: bold;">{{ movie.number_of_people }}</span> people, and the audition will be held at <span style="color: red; font-weight: bold;">{{ movie.location }}</span>.</p>
+
+        </div>
+        
+    </div>
+    <p class="apply-title">To apply for an audition, please provide the following details: Start with your full name and include your age,<br> 
+        ensuring it aligns with the requirements for the role. Specify your gender, and provide your phone number and email<br>
+         address for contact purposes. Attach a recent photograph of yourself, preferably a clear headshot or full-body shot <br>
+         that represents your current look. In the background section, briefly outline any relevant acting experience or training, <br>
+         including notable roles or productions. Mention any special skills or talents that could be relevant to the role. Lastly,<br>
+          indicate your availability for both the audition and potential shooting dates. If you have professional references, <br>
+          please include their contact information as well.</p>
+          {% include 'auditions/footer.html' %}
+
+</body>
+</html>

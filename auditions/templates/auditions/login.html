@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 5px;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2; /* Light grey background */
+      color: #918d8d; /* Black text color */
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+    .navbar {
+      background-color: rgb(255, 255, 255);
+      color: rgb(0, 0, 0); /* Set text color to black */
+      padding: 1px 3px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      height: 70px; /* Adjusted height */
+    }
+    .container {
+      width: 400px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 10px; /* Adjusted margin to accommodate navbar */
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-control {
+      width: calc(100% - 30px);
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #a1c1e1;
+      box-shadow: 0 0 5px #85afd6;
+    }
+    .show-password {
+      cursor: pointer;
+      display: inline-block;
+      margin-left: -30px;
+      margin-top: 5px;
+      position: relative;
+    }
+    .show-password i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #87aed8;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none; /* Added for anchor tag styling */
+      text-align: center; /* Center text for anchor tag */
+      margin-bottom: 10px; /* Spacing between buttons */
+    }
+    .btn:hover {
+      background-color: #00cef3;
+    }
+    .errorlist {
+      color: rgb(189, 115, 115);
+      margin-top: 10px;
+    }
+    .register-message {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .register-link {
+      color: #6ca2dc;
+      text-decoration: underline;
+    }
+    .register-link:hover {
+      color: #82a1df;
+      text-decoration: underline;
+    }
+    .forgot-password {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .forgot-password a {
+      color: #76a6da;
+      text-decoration: underline;
+    }
+    .forgot-password a:hover {
+      color: #5e90d6;
+      text-decoration: underline;
+    }
+    .site-name {
+      font-family: 'Courier New', Courier, monospace;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 24px; /* Reduced font size */
+      color: rgb(0, 0, 0) !important; /* Set text color to black */
+      text-decoration: none !important;
+    }
+    .cart-container {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      color: #000; /* Black text color */
+    }
+    .cart-field {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #6abad4; /* Light blue border */
+      padding: 5px;
+      border-radius: 5px; /* Rounded corners */
+      width: 80px;
+    }
+    .cart-icon {
+      font-size: 20px;
+    }
+    .cart-count {
+      font-size: 14px;
+      margin-left: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .cart-link {
+      text-decoration: none;
+      color: inherit;
+    }
+    .page-header {
+            position: fixed; /* Fixed position to stay at the top */
+            top: 0;
+            left: 0;
+            width: 100%; /* Full width */
+            background-color: #ffffff; /* Blue color */
+            padding: 10px 0; /* Padding for the header */
+            text-align: center;
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .site-name {
+            font-family: 'Your-Professional-Font', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff; /* White text color */
+            text-decoration: none;
+            font-size: 27px;
+        }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-Mpy5vlNKqzUMn4Ky1Gh2r81NdPy6BlqjCwEYMquLxVK5oOYRpsvuazxbuPi+/2jW" crossorigin="anonymous">
+</head>
+<body>
+  <div class="page-header">
+    <h1 class="site-name">login</h1>
+</div>
+  <div class="container">
+    <form method="post" class="form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" class="form-control" required>
+        <span class="show-password" onclick="showPassword('password')"><i class="fas fa-eye"></i></span>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <!-- Validation errors display -->
+    {% if form.errors %}
+    <div class="errorlist">
+      <ul>
+        {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+        <li>{{ field }}: {{ error }}</li>
+        {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <!-- Forgot Password link -->
+
+    <!-- Register message -->
+  </div><br><br><br><br><br><br>
+
+  <script>
+    function showPassword(fieldId) {
+      var passwordInput = document.getElementById(fieldId);
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        document.querySelector('.show-password i').classList.remove('fa-eye');
+        document.querySelector('.show-password i').classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        document.querySelector('.show-password i').classList.remove('fa-eye-slash');
+        document.querySelector('.show-password i').classList.add('fa-eye');
+      }
+    }
+  </script>
+</body>
+</html>

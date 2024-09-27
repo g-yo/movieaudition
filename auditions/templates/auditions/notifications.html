@@ -1,0 +1,59 @@
+<h1>Your Notifications</h1>
+
+<style>
+    /* Custom styles for notifications */
+    ul.notifications-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    ul.notifications-list li {
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    ul.notifications-list li:hover {
+        background-color: #e9ecef;
+    }
+
+    .new-notification {
+        font-weight: bold;
+        color: #ff3b3b;
+    }
+
+    .notification-time {
+        display: block;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .no-notifications {
+        color: #6c757d;
+        font-style: italic;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <ul class="notifications-list">
+                {% for notification in notifications %}
+                    <li class="alert alert-{{ notification.type }}">
+                        <span>{{ notification.message }}</span>
+                        <span class="notification-time">{{ notification.created_at }}</span>
+                        {% if not notification.is_read %}
+                            <strong class="new-notification">(New)</strong>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li class="alert alert-info no-notifications">No notifications available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
