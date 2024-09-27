@@ -100,4 +100,4 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development (prints email to console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
