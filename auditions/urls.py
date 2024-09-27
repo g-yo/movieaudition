@@ -34,7 +34,6 @@ urlpatterns = [
     path('profile/', user_profile, name='user_profile'),
     path('dashboard/', user_dashboard, name='user_dashboard'),
     path('movies_by_age/<int:age>/', views.movies_by_age, name='movies_by_age'),
-    path('chatbot/', chatbot_view, name='chatbot'),
     path('overview/', views.overview, name='overview'),
     path('update_profile/', views.update_profile, name='update_profile'),
     path('notifications/', views.notifications, name='notifications'),

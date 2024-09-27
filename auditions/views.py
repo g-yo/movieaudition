@@ -23,33 +23,6 @@ from django.db.models import Count, F, Q
 # Load environment variables
 load_dotenv()
 
-# Configure the Google AI SDK with your API key
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-# Create the AI model
-generation_config = {
-    "temperature": 1,
-    "top_p": 0.95,
-    "top_k": 64,
-    "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
-}
-
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-)
-
-def chatbot_view(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        user_message = data.get('message')
-        
-        # Process the message and generate a reply (implement your logic here)
-        bot_reply = "This is a placeholder reply."  # Replace with actual bot logic
-
-        return JsonResponse({'reply': bot_reply})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 def movie_list(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
