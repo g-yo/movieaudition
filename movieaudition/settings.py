@@ -75,7 +75,7 @@ DATABASES = {
         default=os.environ.get('DATABASE_URL')
     )
 }
-# Password validators
+# Password validatorssss
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
