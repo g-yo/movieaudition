@@ -81,7 +81,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-# Password validatorssss
+# Password validatorsss
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
