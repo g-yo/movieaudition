@@ -28,7 +28,7 @@ jobs:
     - name: Build and push Docker image
       run: |
         docker build -t geoaugustine/movieaudition:latest .
-        docker geoaugustine/movieaudition:latest
+        docker push geoaugustine/movieaudition:latest
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v0.1.0
