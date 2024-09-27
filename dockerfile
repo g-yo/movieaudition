@@ -17,4 +17,4 @@ EXPOSE 8000
 COPY .env .env
 
 # Run Django using Gunicorn
-CMD ["gunicorn", "auditions.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "movieaudition.wsgi:application", "--bind", "0.0.0.0:8000"]
