@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
@@ -11,6 +11,9 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - default
+    ports:
+      - "5432:5432"  # Expose Postgres port to communicate with external services if necessary
+    restart: always  # Ensures that the container restarts automatically in case of failure
 
   web:
     build:
@@ -25,8 +28,10 @@ services:
       - db
     environment:
       - DEBUG=True
-      - DATABASE_URL=postgres://postgres:65376537@movieaudition.chkka4ea4ew0.us-east-1.rds.amazonaws.com:5432/movieaudition
-
+      - DATABASE_URL=postgres://postgres:65376537@db:5432/movieaudition  # Use internal Docker service name for DB
+    networks:
+      - default
+    restart: always  # Restarts the web service in case of failure
 
 volumes:
   pg_data:
