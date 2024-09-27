@@ -17,11 +17,11 @@ services:
 
   web:
     build:
-      context: .
+      context: .  # Path to the directory containing the Dockerfile
       dockerfile: Dockerfile
     command: gunicorn movieaudition.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - .:/app
+      - .:/app  # Mount the current directory to /app in the container
     ports:
       - "8000:8000"
     depends_on:
