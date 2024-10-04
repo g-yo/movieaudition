@@ -33,7 +33,7 @@ class Application(models.Model):
         ('other','Other'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    created_at = models.DateTimeField(default=timezone.now)  # Default to current timestamp
+    created_at = models.DateTimeField(default=timezone.now)  # Default tvo current timestamp
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField()
