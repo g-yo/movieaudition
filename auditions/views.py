@@ -631,37 +631,37 @@ def admin_report(request):
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.utils import timezone
-from xhtml2pdf import pisa
+# from xhtml2pdf import pisa
 from .models import Application, CustomUser
 
 def admin_report_pdf(request):
     # Fetch the context data
-    users = CustomUser.objects.all()
-    applications = Application.objects.all()
+    # users = CustomUser.objects.all()
+    # applications = Application.objects.all()
     
-    context = {
-        'now': timezone.now(),
-        'total_registrations': users.count(),
-        'male_registrations': users.filter(gender='Male').count(),
-        'female_registrations': users.filter(gender='Female').count(),
-        'age_group': '18-25',  # Example value
-        'selected_candidates': applications.filter(selected=True).count(),
-        'users': users,
-        'applications': applications,
-    }
+    # context = {
+    #     'now': timezone.now(),
+    #     'total_registrations': users.count(),
+    #     'male_registrations': users.filter(gender='Male').count(),
+    #     'female_registrations': users.filter(gender='Female').count(),
+    #     'age_group': '18-25',  # Example value
+    #     'selected_candidates': applications.filter(selected=True).count(),
+    #     'users': users,
+    #     'applications': applications,
+    # }
     
-    # Load the template
-    template = get_template('admin/admin_report.html')  # Use the correct template path
-    html = template.render(context)
+    # # Load the template
+    # template = get_template('admin/admin_report.html')  # Use the correct template path
+    # html = template.render(context)
     
-    # Create a HttpResponse object with PDF content
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="admin_report.pdf"'
+    # # Create a HttpResponse object with PDF content
+    # response = HttpResponse(content_type='application/pdf')
+    # response['Content-Disposition'] = 'attachment; filename="admin_report.pdf"'
 
-    # Generate PDF
-    pisa_status = pisa.CreatePDF(html, dest=response)
+    # # Generate PDF
+    # pisa_status = pisa.CreatePDF(html, dest=response)
 
-    # Check for errors
-    if pisa_status.err:
+    # # Check for errors
+    # if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
