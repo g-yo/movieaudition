@@ -635,6 +635,7 @@ from django.utils import timezone
 from .models import Application, CustomUser
 
 def admin_report_pdf(request):
+    pass
     # Fetch the context data
     # users = CustomUser.objects.all()
     # applications = Application.objects.all()
@@ -663,5 +664,5 @@ def admin_report_pdf(request):
 
     # # Check for errors
     # if pisa_status.err:
-        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
+    #     return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    # return response
