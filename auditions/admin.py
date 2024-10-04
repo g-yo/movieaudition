@@ -16,7 +16,7 @@ class MovieAdmin(admin.ModelAdmin):
     )
     list_filter = ('gender', 'location_name')
     search_fields = ('name', 'description', 'location_name')  # Add fields you want to search
-    prepopulated_fields = {'description': ('name',)}  # Optional: If you want to auto-fill based on name
+    prepopulated_fields = {'description': ('name',)}  # Optional: If want to auto-fill based on name
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
