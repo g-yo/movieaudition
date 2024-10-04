@@ -1,9 +1,22 @@
 from django.contrib import admin
 from .models import Movie, Application, CustomUser
 
+@admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ('name', 'age_start', 'age_end', 'gender', 'number_of_people', 'location', 'last_registration_date')
-    list_filter = ('gender', 'location', 'last_registration_date')
+    list_display = (
+        'name', 
+        'description', 
+        'age_start', 
+        'age_end', 
+        'gender', 
+        'number_of_people', 
+        'location_name', 
+        'latitude', 
+        'longitude'
+    )
+    list_filter = ('gender', 'location_name')
+    search_fields = ('name', 'description', 'location_name')  # Add fields you want to search
+    prepopulated_fields = {'description': ('name',)}  # Optional: If you want to auto-fill based on name
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- FontAwesome CDN -->
     <style>
-body {
+        body {
             font-family: Arial, sans-serif;
             color: #333; /* Dark gray text */
             margin: 0;
@@ -15,25 +15,13 @@ body {
             position: relative;
         }
 
-        /* body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('{{ movie.image.url }}');
-            background-size: cover;
-            background-position: center;
-            filter: opacity(0.5); 
-            z-index: -1;
-        } */
         .apply-title {
-        color: rgb(0, 0, 0);
-        text-align: center;
-        display: block;
-        width: 100%;
-    }
+            color: rgb(0, 0, 0);
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
         .container {
             max-width: 1200px;
             margin: 20px auto;
@@ -42,45 +30,36 @@ body {
             border-radius: 8px; /* Rounded corners */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
             display: flex;
-        
             align-items: flex-start; /* Align items to the start of the container */
         }
 
-
         .image-container {
-  flex: 1;
-  padding-right: 20px;
-  overflow: hidden; /* Add this line to clip the image when zoomed */
-}
+            flex: 1;
+            padding-right: 20px;
+            overflow: hidden;
+        }
 
-.image-container img {
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: transform 0.3s ease; /* Add this line for the transition effect */
-  transform: scale(1); /* Add this line to set the initial scale */
-  border-radius: 20px; /* Add this line for rounded corners */
-}
+        .image-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+            transform: scale(1);
+            border-radius: 20px;
+        }
 
-.image-container:hover img {
-  transform: scale(0.9); /* Adjust the value to your liking */
-}
+        .image-container:hover img {
+            transform: scale(0.9);
+        }
+
         .details-container {
             flex: 2;
         }
 
         h1 {
-            color: #ff0000; /* Blue color for the title */
+            color: #ff0000; /* Red color for the title */
             text-align: center;
             margin-bottom: 20px;
-        }
-
-        img {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-radius: 8px; /* Rounded corners */
-            object-fit: cover;
         }
 
         p {
@@ -95,44 +74,55 @@ body {
             padding: 10px;
             font-size: 1.1em;
             color: #ffffff;
-            background-color: #ff0000; /* Blue color */
+            background-color: #ff0000;
             border: none;
-            border-radius: 5px; /* Rounded corners */
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #ef3f3f; /* Darker blue on hover */
+            background-color: #ef3f3f;
         }
 
         a {
             text-decoration: none;
         }
+
         .navbar {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    background: white;
-    border-bottom: 2px solid #ddd;
-    position: relative;
-    overflow: hidden;
-}
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: white;
+            border-bottom: 2px solid #ddd;
+        }
 
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
-    color: #000;
-    z-index: 2;
-}
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #000;
+        }
 
-.navbar-nav .nav-item .nav-link {
-    color: #000000 !important; /* Black color */
-}
-.custom-paragraph {
-    text-align: center;
-    margin: 20px 0; /* Add margin to create space around the centered paragraph */
-}
+        .navbar-nav .nav-item .nav-link {
+            color: #000000 !important; /* Black color */
+        }
 
+        .custom-paragraph {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .map-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .map-iframe {
+            width: 100%;
+            height: 400px;
+            border: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -171,27 +161,42 @@ body {
             <h1>{{ movie.name }}</h1>
             <p>{{ movie.description }}</p>
             <p><strong>Age of Applicant:</strong> <span style="color: red; font-weight: bold;">{{ movie.age_start }}-{{ movie.age_end }}</span></p>
-            <p><strong>Genderof Applicant:</strong> <span style="color: red; font-weight: bold;">{{ movie.gender }}</span></p>
+            <p><strong>Gender of Applicant:</strong> <span style="color: red; font-weight: bold;">{{ movie.gender }}</span></p>
             <p><strong>Number of People Needed:</strong> <span style="color: red; font-weight: bold;">{{ movie.number_of_people }}</span></p>
-            <p><strong>Location of Audition:</strong> <span style="color: red; font-weight: bold;">{{ movie.location }}</span></p>
+            <p><strong>Location of Audition:</strong> <span style="color: red; font-weight: bold;">{{ movie.location_name }}</span></p>
 
             <a href="{% url 'apply_for_movie' movie.id %}">
                 <button>Apply</button>
-                
             </a>
-            <p class="custom-paragraph">For this movie, we are looking for <span style="color: red; font-weight: bold;">{{ movie.gender }}</span> applicants aged between <span style="color: red; font-weight: bold;">{{ movie.age_start }}-{{ movie.age_end }}</span>. We need <span style="color: red; font-weight: bold;">{{ movie.number_of_people }}</span> people, and the audition will be held at <span style="color: red; font-weight: bold;">{{ movie.location }}</span>.</p>
 
+            <p class="custom-paragraph">For this movie, we are looking for <span style="color: red; font-weight: bold;">{{ movie.gender }}</span> applicants aged between <span style="color: red; font-weight: bold;">{{ movie.age_start }}-{{ movie.age_end }}</span>. We need <span style="color: red; font-weight: bold;">{{ movie.number_of_people }}</span> people, and the audition will be held at <span style="color: red; font-weight: bold;">{{ movie.location_name }}</span>.</p>
         </div>
-        
     </div>
+
+    <!-- Map Section -->
+    <div class="container">
+        <div class="map-container">
+            <h3>Audition Location Map</h3>
+            <iframe class="map-iframe" 
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDrO-u4v5zkABNwdS2wl0V7YKBU-l_wULI&q={{ movie.location_name }}"
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
     <p class="apply-title">To apply for an audition, please provide the following details: Start with your full name and include your age,<br> 
         ensuring it aligns with the requirements for the role. Specify your gender, and provide your phone number and email<br>
-         address for contact purposes. Attach a recent photograph of yourself, preferably a clear headshot or full-body shot <br>
-         that represents your current look. In the background section, briefly outline any relevant acting experience or training, <br>
-         including notable roles or productions. Mention any special skills or talents that could be relevant to the role. Lastly,<br>
-          indicate your availability for both the audition and potential shooting dates. If you have professional references, <br>
-          please include their contact information as well.</p>
-          {% include 'auditions/footer.html' %}
-
+        address for contact purposes. Attach a recent photograph of yourself, preferably a clear headshot or full-body shot <br>
+        that represents your current look. In the background section, briefly outline any relevant acting experience or training, <br>
+        including notable roles or productions. Mention any special skills or talents that could be relevant to the role. Lastly,<br>
+        indicate your availability for both the audition and potential shooting dates. If you have professional references, <br>
+        please include their contact information as well.</p>
+        
+    {% include 'auditions/footer.html' %}
+    
+    <!-- Optional JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

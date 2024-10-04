@@ -20,8 +20,51 @@ from .forms import CustomUserUpdateForm
 import json
 from django.db.models.functions import TruncMonth
 from django.db.models import Count, F, Q
+from django.utils.timezone import now
+import random
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Feedback
+from .forms import FeedbackForm
+
+from django.template.loader import render_to_string
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from .forms import CustomUserCreationForm
+from .models import Movie, Application, Notification
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 # Load environment variables
 load_dotenv()
+
+from .models import Movie, Feedback
 
 def movie_list(request):
     if request.user.is_authenticated:
@@ -42,7 +85,10 @@ def movie_list(request):
         movies = Movie.objects.all()
         print(f"All Movies: {list(movies.values('name', 'age_start', 'age_end'))}")  # Debug print
     
-    return render(request, 'auditions/movie_list.html', {'movies': movies})
+    # Fetch the latest three feedbacks
+    feedbacks = Feedback.objects.all().order_by('-date_submitted')[:3]
+
+    return render(request, 'auditions/movie_list.html', {'movies': movies, 'feedbacks': feedbacks})
 
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
@@ -51,17 +97,39 @@ def movie_detail(request, pk):
 @login_required
 def apply_for_movie(request, movie_id):
     movie = get_object_or_404(Movie, pk=movie_id)
+    
     if request.method == 'POST':
         form = ApplicationForm(request.POST, request.FILES)
+        
         if form.is_valid():
             application = form.save(commit=False)
             application.movie = movie
             application.user = request.user  # Associate the application with the logged-in user
             application.save()
+            
+            # Prepare the email details
+            subject = f"Application Submitted: {movie.name}"
+            html_message = render_to_string('emails/application_submitted.html', {'movie': movie, 'user': request.user})
+            plain_message = strip_tags(html_message)
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to_email = [request.user.email]
+
+            # Send the email
+            send_mail(
+                subject,
+                plain_message,
+                from_email,
+                to_email,
+                fail_silently=False,
+                html_message=html_message
+            )
+
             messages.success(request, 'Successfully registered! You will be informed if the application is selected. You can check the status from the dashboard.')
             return redirect('apply_for_movie', movie_id=movie.id)
+    
     else:
         form = ApplicationForm()
+
     return render(request, 'auditions/apply_form.html', {'form': form, 'movie': movie})
 
 def application_success(request):
@@ -74,16 +142,26 @@ def register(request):
         if form.is_valid():
             user = form.save()
             subject = 'Welcome to ACTRS'
-            message = f'Thank you for registering, {user.full_name}!'
+            
+            # Use a template for the email body (HTML)
+            html_message = render_to_string('emails/welcome_email.html', {'user': user})
+            plain_message = strip_tags(html_message)  # Fallback to plain text
+             
             from_email = settings.DEFAULT_FROM_EMAIL
             to_email = [user.email]
-            send_mail(subject, message, from_email, to_email, fail_silently=True)
+
+            # Send the email using EmailMultiAlternatives for both plain text and HTML content
+            email = EmailMultiAlternatives(subject, plain_message, from_email, to_email)
+            email.attach_alternative(html_message, "text/html")
+            email.send(fail_silently=True)
+
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('movie_list')
         else:
             form.add_error(None, "Please correct the errors below.")
     else:
         form = CustomUserCreationForm()
+
     return render(request, 'auditions/register.html', {'form': form})
 
 def userlogin(request):
@@ -134,8 +212,14 @@ def user_logout(request):
 
 @login_required
 def user_profile(request):
-    return render(request, 'auditions/user_profile.html', {'user': request.user})
-
+    user = request.user
+    notifications = Notification.objects.filter(user=user).order_by('-created_at')
+    
+    context = {
+        'user': user,
+        'notifications': notifications,
+    }
+    return render(request, 'auditions/user_profile.html', context)
 def admin_required(function=None):
     return user_passes_test(lambda u: u.is_superuser, login_url='adminlogin')(function)
 
@@ -176,8 +260,9 @@ def add_movie(request):
             return redirect('admin_dashboard')  # Redirect to admin dashboard after saving
     else:
         form = MovieForm()
-    
+
     return render(request, 'admin/add_movie.html', {'form': form})
+
 
 from django.db.models import Count, F
 from django.db.models.functions import TruncMonth
@@ -340,15 +425,58 @@ def select_application(request, application_id):
         is_read=False
     )
 
-    return redirect('application_details', application_id=application.id)
+    # Prepare the email details
+    subject = f"Application Selected: {application.movie.name}"
+    html_message = render_to_string('emails/application_selected.html', {'application': application})
+    plain_message = strip_tags(html_message)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = [application.user.email]
 
+    # Send the email
+    send_mail(
+        subject,
+        plain_message,
+        from_email,
+        to_email,
+        fail_silently=False,
+        html_message=html_message
+    )
+
+    return redirect('application_details', application_id=application.id)
 @login_required
 @admin_required
 def reject_application(request, application_id):
     application = get_object_or_404(Application, id=application_id)
     application.selected = False
     application.save()
+
+    # Create a notification for the user
+    Notification.objects.create(
+        user=application.user,
+        message=f"Your application for {application.movie.name} has been rejected.",
+        is_read=False
+    )
+
+    # Prepare the email details
+    subject = f"Application Rejected: {application.movie.name}"
+    html_message = render_to_string('emails/application_rejected.html', {'application': application})
+    plain_message = strip_tags(html_message)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = [application.user.email]
+
+    # Send the email
+    send_mail(
+        subject,
+        plain_message,
+        from_email,
+        to_email,
+        fail_silently=False,
+        html_message=html_message
+    )
+
+    # Show a success message to the admin
     messages.success(request, 'Application rejected successfully.')
+
     return redirect('application_details', application_id=application.id)
 @login_required
 def overview(request):
@@ -402,9 +530,10 @@ import random
 def get_random_color():
     colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#FFC300", "#DAF7A6", "#C70039", "#900C3F", "#581845"]
     return random.choice(colors)
-
+@login_required
 def notifications_view(request):
-    notifications = Notification.objects.all()
+    # Filter notifications for the current user
+    notifications = Notification.objects.filter(user=request.user)
 
     for notification in notifications:
         notification.background_color = get_random_color()
@@ -413,4 +542,126 @@ def notifications_view(request):
     context = {
         'notifications': notifications
     }
-    return render(request, 'notifications.html', context)
+    return render(request, 'audition/notifications.html', context)
+@login_required
+def feedback_form_view(request):
+    images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg']
+    random_image = random.choice(images)
+    
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user
+            feedback.save()
+            return redirect('feedback_list')
+    else:
+        form = FeedbackForm()
+
+    return render(request, 'auditions/feedback_form.html', {'form': form, 'random_image': random_image})
+
+@login_required
+def feedback_list_view(request):
+    feedbacks = Feedback.objects.all().order_by('-date_submitted')
+    return render(request, 'auditions/feedback_list.html', {'feedbacks': feedbacks})
+def admin_report(request):
+    # Get the current date
+    current_date = now()
+    
+    # Filter applications and registrations for the current month
+    start_of_month = current_date.replace(day=1)
+    total_registrations = Application.objects.filter(created_at__gte=start_of_month).count()
+    
+    # Count male and female registrations for this month
+    male_registrations = Application.objects.filter(created_at__gte=start_of_month, gender='male').count()
+    female_registrations = Application.objects.filter(created_at__gte=start_of_month, gender='female').count()
+
+    # Age distribution
+    age_distribution = Application.objects.values('age').annotate(age_count=Count('age')).order_by('age')
+
+    # Find the most common age group for registrations this month
+    age_group = Application.objects.filter(created_at__gte=start_of_month) \
+                .values('age') \
+                .annotate(age_count=Count('age')) \
+                .order_by('-age_count') \
+                .first()
+
+    # Total number of selected candidates
+    selected_candidates = Application.objects.filter(created_at__gte=start_of_month, selected=True).count()
+
+    # Get all user registrations and applications for the table display
+    users = CustomUser.objects.all()
+    applications = Application.objects.all()
+
+    # Prepare data for the charts
+    # Applications Over Months
+    months_labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    applications_over_months = [
+        Application.objects.filter(created_at__month=i).count() for i in range(1, 13)
+    ]
+    
+    # Gender Chart Data
+    gender_labels = ['Male', 'Female']
+    gender_counts = [male_registrations, female_registrations]
+
+    # Age Group Chart Data
+    age_group_labels = [entry['age'] for entry in age_distribution]
+    age_group_counts = [entry['age_count'] for entry in age_distribution]
+
+    context = {
+        'total_registrations': total_registrations,
+        'male_registrations': male_registrations,
+        'female_registrations': female_registrations,
+        'age_group': age_group['age'] if age_group else None,
+        'selected_candidates': selected_candidates,
+        'users': users,
+        'age_distribution': age_distribution,
+        'applications': applications,
+
+        # Chart Data
+        'months_labels': months_labels,
+        'applications_over_months': applications_over_months,
+        'gender_labels': gender_labels,
+        'gender_counts': gender_counts,
+        'age_group_labels': age_group_labels,
+        'age_group_counts': age_group_counts,
+    }
+
+    return render(request, 'admin/admin_report.html', context)
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.utils import timezone
+from xhtml2pdf import pisa
+from .models import Application, CustomUser
+
+def admin_report_pdf(request):
+    # Fetch the context data
+    users = CustomUser.objects.all()
+    applications = Application.objects.all()
+    
+    context = {
+        'now': timezone.now(),
+        'total_registrations': users.count(),
+        'male_registrations': users.filter(gender='Male').count(),
+        'female_registrations': users.filter(gender='Female').count(),
+        'age_group': '18-25',  # Example value
+        'selected_candidates': applications.filter(selected=True).count(),
+        'users': users,
+        'applications': applications,
+    }
+    
+    # Load the template
+    template = get_template('admin/admin_report.html')  # Use the correct template path
+    html = template.render(context)
+    
+    # Create a HttpResponse object with PDF content
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="admin_report.pdf"'
+
+    # Generate PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    # Check for errors
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

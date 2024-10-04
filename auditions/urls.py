@@ -21,6 +21,8 @@ urlpatterns = [
     path('application/<int:application_id>/', application_details, name='application_details'),
     path('applications/select/<int:application_id>/', select_application, name='select_application'),
     path('applications/reject/<int:application_id>/', reject_application, name='reject_application'),
+    path('admin_report/', views.admin_report, name='admin_report'),
+    path('admin_report_pdf/', views.admin_report_pdf, name='admin_report_pdf'),
 
 
 
@@ -41,7 +43,8 @@ urlpatterns = [
     path('password_change/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change_form.html'), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'), name='password_change_done'),
     path('notifications/', views.notifications, name='notifications'),
-
+    path('feedback/', views.feedback_form_view, name='feedback_form'),
+    path('feedback/list/', views.feedback_list_view, name='feedback_list'),
     # Password reset (Forgot Password)
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),

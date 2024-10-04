@@ -7,6 +7,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from datetime import timedelta
+from django import forms
+from django.core.validators import FileExtensionValidator
+
 
 class Movie(models.Model):
     name = models.CharField(max_length=100)
@@ -15,25 +18,22 @@ class Movie(models.Model):
     age_end = models.PositiveIntegerField(default=0)
     gender = models.CharField(max_length=10)
     number_of_people = models.PositiveIntegerField()
-    location = models.CharField(max_length=100)
+    location_name = models.CharField(max_length=100)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     image = models.ImageField(upload_to='movie_images/', blank=True, null=True)
-    last_registration_date = models.DateTimeField(default=timezone.now() + timedelta(days=30))  # Default 30 days from now
 
     def __str__(self):
         return self.name
-
-    # Optional: Automatically delete movie after the last registration date passes
-    def delete_if_expired(self):
-        if timezone.now() > self.last_registration_date:
-            self.delete()
 
 class Application(models.Model):
     GENDER_CHOICES = [
         ('male', 'Male'),
         ('female', 'Female'),
+        ('other','Other'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    created_at = models.DateTimeField(default=datetime(2000, 1, 1))
+    created_at = models.DateTimeField(default=timezone.now)  # Default to current timestamp
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -42,6 +42,7 @@ class Application(models.Model):
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     photo = models.ImageField(upload_to='photos/', default='')
     video = models.FileField(upload_to='videos/', blank=True, null=True)
+    cv = models.FileField(upload_to='cvs/', validators=[FileExtensionValidator(allowed_extensions=['pdf'])], blank=True, null=True)  # New field for CV upload
     selected = models.BooleanField(default=False)
 
     def __str__(self):
@@ -54,10 +55,11 @@ def send_application_notification(sender, instance, created, **kwargs):
             message = f"Congratulations, {instance.name}! You have been selected for {instance.movie.name}."
         else:
             message = f"Sorry, {instance.name}, you have not been selected for {instance.movie.name}."
-        
+
         # Create a notification for the user
         if instance.user:
             Notification.objects.create(user=instance.user, message=message)
+
 
 class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=255)
@@ -65,7 +67,16 @@ class CustomUser(AbstractUser):
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
     age = models.PositiveIntegerField(null=True, blank=True)
+    
+    # Gender choices
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
+    # Relationships
     groups = models.ManyToManyField(
         Group,
         related_name='customuser_set',
@@ -82,6 +93,7 @@ class CustomUser(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
+        # Calculate age based on date of birth
         if self.date_of_birth:
             today = now().date()
             self.age = today.year - self.date_of_birth.year - (
@@ -89,9 +101,12 @@ class CustomUser(AbstractUser):
             )
         else:
             self.age = None
-        print(f"Calculated Age: {self.age}")  # Debug print
+            
+        # Debug print for calculated age
+        print(f"Calculated Age: {self.age}")
+        
+        # Call the original save method
         super().save(*args, **kwargs)
-
 
 class Notification(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -101,3 +116,12 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.username}: {self.message}"
+
+
+class Feedback(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Changed User to settings.AUTH_USER_MODEL
+    feedback_text = models.TextField()
+    date_submitted = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.date_submitted}'

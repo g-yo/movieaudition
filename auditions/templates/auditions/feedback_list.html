@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .feedback-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .feedback-container img {
+            float: left;
+            margin-right: 20px;
+        }
+        .feedback-container .feedback-content {
+            margin-left: 120px; 
+        }
+        .feedback-container .user-info {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .feedback-container .timestamp {
+            font-size: smaller;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submitted Feedback</h1>
+        <div class="row">
+            {% for feedback in feedbacks %}
+            <div class="col-md-12"> 
+                <div class="feedback-container">
+                    <img src="{% if feedback.user.profile_image %}{{ feedback.user.profile_image.url }}{% else %}{% static 'images/default_profile.png' %}{% endif %}" 
+                         alt="Profile Image" 
+                         class="rounded-circle" 
+                         width="100" 
+                         height="100">
+                    <div class="feedback-content">
+                        <div class="user-info">
+                            {{ feedback.user.username }} 
+                        </div>
+                        <div class="timestamp">
+                            {{ feedback.date_submitted }}
+                        </div>
+                        <p>{{ feedback.feedback_text }}</p>
+                    </div>
+                </div>
+            </div> 
+            {% endfor %}
+        </div> 
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Report</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js CDN -->
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #ff0000;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            margin-top: 40px;
+            font-size: 2rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        ul li {
+            font-size: 1.2rem;
+            padding: 10px;
+            background-color: #f1f1f1;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ff0000;
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Stylish text section */
+        .text-section {
+            padding: 20px;
+            margin: 40px auto;
+            text-align: center;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .text-section::before {
+            content: "";
+            display: block;
+            width: 20%;
+            height: 4px;
+            background-color: #ff0000;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        .btn-red {
+            background-color: transparent;
+            color: #000;
+            border: 2px solid #ff0000;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            display: inline-block;
+        }
+
+        .btn-red:hover {
+            background-color: #ff0000;
+            color: #fff;
+        }
+
+        /* Charts */
+        .chart-container {
+            width: 100%;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            margin: 20px auto;
+        }
+
+        .chart-box {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Admin Report for {{ now|date:"F Y" }}</h1>
+
+        <div class="text-section">
+            <h2>Statistics for This Month</h2>
+            <ul>
+                <li>Total Registrations: {{ total_registrations }}</li>
+                <li>Male Registrations: {{ male_registrations }}</li>
+                <li>Female Registrations: {{ female_registrations }}</li>
+                <li>Most Common Age Group: {{ age_group }}</li>
+                <li>Total Selected Candidates: {{ selected_candidates }}</li>
+            </ul>
+        </div>
+
+        <div class="text-center mb-4"></div>
+            <form method="POST" action="{% url 'admin_report_pdf' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-red">
+                    <i class="fas fa-file-download"></i> Download PDF
+                </button>
+            </form>
+        </div>
+
+        <h2>User Registration Table</h2>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Date of Birth</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.full_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.phone_number }}</td>
+                    <td>{{ user.date_of_birth }}</td>
+                    <td>{{ user.age }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Applications Table</h2>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Applicant Name</th>
+                    <th>Movie</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Selected</th>
+                    <th>Date Submitted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ app.name }}</td>
+                    <td>{{ app.movie.name }}</td>
+                    <td>{{ app.gender }}</td>
+                    <td>{{ app.age }}</td>
+                    <td>{{ app.selected|yesno:"Yes,No" }}</td>
+                    <td>{{ app.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="chart-box">
+                    <div class="chart-title">Total Registrations</div>
+                    <canvas id="registrationChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-box">
+                    <div class="chart-title">Gender Distribution</div>
+                    <canvas id="genderDistributionChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-box">
+                    <div class="chart-title">Age Group Distribution</div>
+                    <canvas id="ageGroupChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Script -->
+    <script>
+        var ctx = document.getElementById('registrationChart').getContext('2d');
+        var registrationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total', 'Male', 'Female'],
+                datasets: [{
+                    label: 'Registrations',
+                    data: [{{ total_registrations }}, {{ male_registrations }}, {{ female_registrations }}],
+                    backgroundColor: ['#ff0000', '#007bff', '#ff6384'],
+                    borderColor: ['#cc0000', '#0056b3', '#cc3366'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var ctx2 = document.getElementById('genderDistributionChart').getContext('2d');
+        var genderDistributionChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    label: 'Gender Distribution',
+                    data: [{{ male_registrations }}, {{ female_registrations }}],
+                    backgroundColor: ['#007bff', '#ff6384'],
+                    hoverOffset: 4
+                }]
+            }
+        });
+
+        var ctx3 = document.getElementById('ageGroupChart').getContext('2d');
+        var ageGroupChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['18-25', '26-35', '36-45', '46+'],
+                datasets: [{
+                    label: 'Age Group Distribution',
+                    data: [{{ age_group_18_25 }}, {{ age_group_26_35 }}, {{ age_group_36_45 }}, {{ age_group_46_plus }}],
+                    backgroundColor: ['#36a2eb', '#ff6384', '#ff9f40', '#4bc0c0'],
+                    borderColor: ['#3182ce', '#cc3366', '#cc7f3b', '#379391'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

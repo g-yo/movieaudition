@@ -1,8 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Movie</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <!-- Google Maps API script -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrO-u4v5zkABNwdS2wl0V7YKBU-l_wULI&callback=initMap&libraries=places" async defer></script>
+
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+
+    <script>
+        let map, marker, geocoder;
+
+        // Initialize the map and geocoder
+        function initMap() {
+            geocoder = new google.maps.Geocoder();
+            
+            // Default location (San Francisco)
+            var defaultLocation = {lat: 37.7749, lng: -122.4194};
+
+            // Initialize the map
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: defaultLocation,
+                zoom: 12
+            });
+
+            // Initialize the marker
+            marker = new google.maps.Marker({
+                position: defaultLocation,
+                map: map,
+                draggable: true // Make marker draggable
+            });
+
+            // Event listener for marker drag end
+            google.maps.event.addListener(marker, 'dragend', function() {
+                updateLocationFields(marker.getPosition());
+            });
+
+            // Event listener for map click
+            google.maps.event.addListener(map, 'click', function(event) {
+                marker.setPosition(event.latLng);
+                updateLocationFields(event.latLng);
+            });
+        }
+
+        // Function to update form fields with the selected location
+        function updateLocationFields(latlng) {
+            document.getElementById('id_latitude').value = latlng.lat();
+            document.getElementById('id_longitude').value = latlng.lng();
+
+            // Get the address based on the latlng
+            geocoder.geocode({'location': latlng}, function(results, status) {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        document.getElementById('id_location_name').value = results[0].formatted_address;
+                        console.log('Location added: ' + results[0].formatted_address);
+                    } else {
+                        alert('No address found for this location.');
+                    }
+                } else {
+                    alert('Geocoder failed: ' + status);
+                }
+            });
+        }
+
+        // Function triggered by "Add Location" button
+        function setLocationName() {
+            var lat = marker.getPosition().lat();
+            var lng = marker.getPosition().lng();
+            var latlng = {lat: lat, lng: lng};
+            updateLocationFields(latlng);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -10,7 +87,21 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Add Movie</button>
+            
+            <!-- Map Section -->
+            <div id="map"></div>
+            
+            <!-- Button to Add Location -->
+            <button type="button" class="btn btn-success mt-3" onclick="setLocationName()">Add Location to Field</button>
+            
+            <!-- Latitude and Longitude fields (hidden and auto-filled by map interaction) -->
+            <input type="hidden" id="id_latitude" name="latitude" required>
+            <input type="hidden" id="id_longitude" name="longitude" required>
+            
+            <!-- Location name field to display the address -->
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary mt-3">Add Movie</button>
         </form>
     </div>
 </body>
