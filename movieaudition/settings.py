@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from decouple import config
-import dj_database_url
 
 # Load environment variables from .env file
 SECRET_KEY = config('DJANGO_SECRET_KEY')
@@ -69,7 +68,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'movieaudition.wsgi.application'
-print("DATABASE_URL:", os.environ.get('DATABASE_URL'))
 
 DATABASES = {
     'default': {
